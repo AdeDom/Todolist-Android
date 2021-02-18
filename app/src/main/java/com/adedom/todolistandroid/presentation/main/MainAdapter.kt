@@ -32,6 +32,7 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
         get() = asyncListDiffer.currentList
 
     private var todolistListener: ((TodolistAllParcelable) -> Unit)? = null
+    private var removeTodolistListener: ((TodolistAllParcelable) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -49,6 +50,11 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
             itemView.setOnClickListener {
                 todolistListener?.invoke(item)
             }
+
+            itemView.setOnLongClickListener {
+                removeTodolistListener?.invoke(item)
+                true
+            }
         }
     }
 
@@ -58,6 +64,10 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
 
     fun setTodolistListener(todolistListener: (TodolistAllParcelable) -> Unit) {
         this.todolistListener = todolistListener
+    }
+
+    fun setRemoveTodolistListener(removeTodolistListener: (TodolistAllParcelable) -> Unit) {
+        this.removeTodolistListener = removeTodolistListener
     }
 
     inner class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

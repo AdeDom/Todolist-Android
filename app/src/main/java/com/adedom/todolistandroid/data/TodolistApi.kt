@@ -27,7 +27,7 @@ class TodolistApi {
         }
     }
 
-    suspend fun callRemoveTodolist(todolistId: String): BaseResponse {
+    suspend fun callRemoveTodolist(todolistId: String?): BaseResponse {
         return client.delete("${BASE_URL}api/todolist/remove-todolist/$todolistId")
     }
 

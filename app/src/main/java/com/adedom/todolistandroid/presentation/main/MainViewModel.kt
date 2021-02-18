@@ -1,5 +1,6 @@
 package com.adedom.todolistandroid.presentation.main
 
+import com.adedom.todolist.models.response.BaseResponse
 import com.adedom.todolistandroid.data.TodolistApi
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +27,8 @@ class MainViewModel : CoroutineScope {
 
     private val api by lazy { TodolistApi() }
 
+    private var removeTodolistListener: ((BaseResponse) -> Unit)? = null
+
     fun callFetchTodolistAll() {
         launch {
             setState { copy(isLoading = true) }
@@ -37,6 +40,21 @@ class MainViewModel : CoroutineScope {
 
             setState { copy(isLoading = false) }
         }
+    }
+
+    fun callRemoveTodolist(todolistId: String?) {
+        launch {
+            setState { copy(isLoading = true) }
+
+            val response = api.callRemoveTodolist(todolistId)
+            removeTodolistListener?.invoke(response)
+
+            setState { copy(isLoading = false) }
+        }
+    }
+
+    fun removeTodolistListener(removeTodolistListener: (BaseResponse) -> Unit) {
+        this.removeTodolistListener = removeTodolistListener
     }
 
     private fun setState(reducer: MainViewState.() -> MainViewState) {

@@ -3,6 +3,7 @@ package com.adedom.todolistandroid.presentation.main
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.asLiveData
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity() {
         initialView()
         observeViewModel()
         viewEvent()
+        listener()
     }
 
     override fun onStart() {
@@ -75,8 +77,35 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        mAdapter.setRemoveTodolistListener {
+            dialogRemoveTodolist(it)
+        }
+
         fab.setOnClickListener {
             startActivity(Intent(baseContext, AddTodolistActivity::class.java))
+        }
+    }
+
+    private fun listener() {
+        viewModel.removeTodolistListener {
+            Toast.makeText(baseContext, "${it.message}", Toast.LENGTH_SHORT).show()
+            if (it.success) {
+                viewModel.callFetchTodolistAll()
+            }
+        }
+    }
+
+    private fun dialogRemoveTodolist(todolistAll: TodolistAllParcelable) {
+        AlertDialog.Builder(this).apply {
+            setTitle("Remove todolist")
+            setMessage("Do you want remove ${todolistAll.title} ?")
+            setPositiveButton(android.R.string.cancel) { dialog, _ ->
+                dialog.dismiss()
+            }
+            setNegativeButton(android.R.string.ok) { dialog, _ ->
+                viewModel.callRemoveTodolist(todolistAll.todolistId)
+            }
+            show()
         }
     }
 
