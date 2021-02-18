@@ -1,6 +1,6 @@
 package com.adedom.todolistandroid.presentation.main
 
-import com.adedom.todolistandroid.data.TodolistApiImpl
+import com.adedom.todolistandroid.data.TodolistApi
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,13 +24,13 @@ class MainViewModel : CoroutineScope {
     val state: StateFlow<MainViewState>
         get() = _state
 
-    private val api by lazy { TodolistApiImpl() }
+    private val api by lazy { TodolistApi() }
 
-    fun callTodolistAll() {
+    fun callFetchTodolistAll() {
         launch {
             setState { copy(isLoading = true) }
 
-            val response = api.callTodolistAll()
+            val response = api.callFetchTodolistAll()
             if (response.success) {
                 setState { copy(todolistAll = response.todolistAll) }
             }

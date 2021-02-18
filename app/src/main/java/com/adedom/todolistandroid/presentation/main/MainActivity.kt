@@ -1,5 +1,6 @@
 package com.adedom.todolistandroid.presentation.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +8,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.adedom.todolistandroid.R
+import com.adedom.todolistandroid.presentation.addtodolist.AddTodolistActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -18,10 +20,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        viewModel.callTodolistAll()
-
         initialView()
         observeViewModel()
+        viewEvent()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        viewModel.callFetchTodolistAll()
     }
 
     private fun initialView() {
@@ -43,6 +50,12 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(baseContext, "${throwable.message}", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun viewEvent() {
+        fab.setOnClickListener {
+            startActivity(Intent(baseContext, AddTodolistActivity::class.java))
+        }
     }
 
 }
