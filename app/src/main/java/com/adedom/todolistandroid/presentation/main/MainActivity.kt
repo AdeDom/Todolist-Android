@@ -9,6 +9,8 @@ import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.adedom.todolistandroid.R
 import com.adedom.todolistandroid.presentation.addtodolist.AddTodolistActivity
+import com.adedom.todolistandroid.presentation.changetodolist.ChangeTodolistActivity
+import com.adedom.todolistandroid.presentation.model.TodolistAllParcelable
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -39,10 +41,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeViewModel() {
-        viewModel.state.asLiveData().observe(this, {
-            progressBar.isVisible = it.isLoading
+        viewModel.state.asLiveData().observe(this, { state ->
+            progressBar.isVisible = state.isLoading
 
-            mAdapter.submitList(it.todolistAll)
+            val todolistAll = state.todolistAll.map {
+                TodolistAllParcelable(
+                    todolistId = it.todolistId,
+                    userId = it.userId,
+                    title = it.title,
+                    content = it.content,
+                    createdLong = it.createdLong,
+                    updatedLong = it.updatedLong,
+                    createdString = it.createdString,
+                    updatedString = it.updatedString,
+                    isShow = it.isShow,
+                )
+            }
+            mAdapter.submitList(todolistAll)
         })
 
         viewModel.error.asLiveData().observe(this, { throwable ->
@@ -53,6 +68,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun viewEvent() {
+        mAdapter.setTodolistListener {
+            Intent(baseContext, ChangeTodolistActivity::class.java).apply {
+                putExtra("todolistAll", it)
+                startActivity(this)
+            }
+        }
+
         fab.setOnClickListener {
             startActivity(Intent(baseContext, AddTodolistActivity::class.java))
         }
